@@ -257,20 +257,29 @@ const PassageArray = PassageArray_raw.map((passage) => {
     updatedPassage.page = `Vocabulary: ${passage.subtitle} ${passage.passage_title}`;
   }
 
-if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
-  console.log("Not running locally (e.g., production or GitHub Pages)");
-    if (passage.audio_tags) {
-    const basePath = "/Practice_3"; // Replace 'repository-name' with your GitHub repository name
-    updatedPassage.audio_tags = passage.audio_tags.map((audio) =>
-      `${basePath}/audio/${audio.split('/').pop()}` // Extract the file name and prepend the base path
-    );
+  // Adjust audio paths based on the environment
+  if (passage.audio_tags) {
+    if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+      console.log("Not running locally (e.g., production or GitHub Pages)");
+      const basePath = "/Practice_3"; // Replace with your GitHub repository name or use an environment variable
+      updatedPassage.audio_tags = passage.audio_tags.map((audio) =>
+        `${basePath}/audio/${audio.split('/').pop()}` // Extract the file name and prepend the base path
+      );
+    } else {
+      console.log("Running locally");
+      updatedPassage.audio_tags = passage.audio_tags.map((audio) =>
+        `./audio/${audio.split('/').pop()}` // Ensure the path points to the correct location in the public folder
+      );
+    }
   }
-} else {
-  console.log("Running locally");
-}
 
-return updatedPassage;
+  if (process.env.NODE_ENV !== "production") {
+    console.log("Final audio paths:", updatedPassage.audio_tags);
+  }
+
+  return updatedPassage;
 });
+
 
 /*
 const PassageArray = PassageArray_raw.map((passage) => {
