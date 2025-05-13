@@ -246,6 +246,33 @@ const PassageArray_raw = [
     },
 ];
 
+
+const PassageArray = PassageArray_raw.map((passage) => {
+  let updatedPassage = { ...passage };
+
+  // Dynamically generate the `page` property for vocabulary pages
+  if (passage.type === "vocabulary_page" && 
+      passage.passage_title &&
+      passage.page !== "Vocabulary_Main_Page") {
+    updatedPassage.page = `Vocabulary: ${passage.subtitle} ${passage.passage_title}`;
+  }
+
+if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+  console.log("Not running locally (e.g., production or GitHub Pages)");
+    if (passage.audio_tags) {
+    const basePath = "/repository-name"; // Replace 'repository-name' with your GitHub repository name
+    updatedPassage.audio_tags = passage.audio_tags.map((audio) =>
+      `${basePath}/audio/${audio.split('/').pop()}` // Extract the file name and prepend the base path
+    );
+  }
+} else {
+  console.log("Running locally");
+}
+
+return updatedPassage;
+});
+
+/*
 const PassageArray = PassageArray_raw.map((passage) => {
   if (passage.type === "vocabulary_page" && 
     passage.passage_title &&
@@ -257,5 +284,16 @@ const PassageArray = PassageArray_raw.map((passage) => {
   }
   return passage; // Leave other passages unchanged
 });
+
+const PassageArray = PassageArray_raw.map((passage) => {
+  if (passage.audio_tags) {
+    return {
+      ...passage,
+      audio_tags: passage.audio_tags.map((audio) => `${process.env.PUBLIC_URL}${audio.replace('./public', '')}`), // Adjust audio paths
+    };
+  }
+  return passage; // Leave other passages unchanged
+});
+*/
 
 export default PassageArray;

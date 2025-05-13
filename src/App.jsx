@@ -124,7 +124,6 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
     <NavBar
       passages={PassageArray}
       onNavigate={(index) => {
-        console.log("Navigating to passage index:", index); // Debugging log
         setCurrentIndex(index);
         setShowNavBar(false); // Close the NavBar after navigation
       }}
@@ -317,7 +316,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         <button
           key={index}
           onClick={() => {
-          console.log("Button clicked:", exercise); // Debugging log
+          
           // Add navigation logic for each button
           if (exercise === "1. Match the vocabulary words to correct translation") {
             const matchingIndex = PassageArray.findIndex(
