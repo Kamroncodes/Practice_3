@@ -260,7 +260,7 @@ const PassageArray = PassageArray_raw.map((passage) => {
 if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
   console.log("Not running locally (e.g., production or GitHub Pages)");
     if (passage.audio_tags) {
-    const basePath = "/repository-name"; // Replace 'repository-name' with your GitHub repository name
+    const basePath = "/Practice_3"; // Replace 'repository-name' with your GitHub repository name
     updatedPassage.audio_tags = passage.audio_tags.map((audio) =>
       `${basePath}/audio/${audio.split('/').pop()}` // Extract the file name and prepend the base path
     );
