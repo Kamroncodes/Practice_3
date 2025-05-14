@@ -244,6 +244,11 @@ const PassageArray_raw = [
     audio_tags: ["./public/audio/presentation.mp3", "./public/audio/relieved.mp3", "./public/audio/nervous.mp3", "./public/audio/posture.mp3", "./public/audio/audience.mp3", "./public/audio/eye_contact.mp3",],
     vocabulary_wordlist: ["presentation", "relieved", "nervous", "posture", "audience", "eye contact", ],
     },
+    {type: "ending_page",
+      lesson_title: "School Presentation",
+      ending_page_img: "",
+      instructions: ["Great work!", "It's ok if you didn't do all the exercises today.", "We recommend revisiting the review and practice exercises in a few days regardless."]
+    },
 ];
 
 

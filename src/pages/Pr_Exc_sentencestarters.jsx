@@ -1,5 +1,26 @@
+import { useEffect } from "react";
+import AITutor from "../utils/AITutor";
+
+
+const SentenceStartersPage = () => {
+
+  return (
+    <div className="sentence_builder" style={{ textAlign: "center", marginTop: "20px" }}>
+      <h2>Practice Exercise: Sentence Starters</h2>
+
+      
+
+    </div>
+  );
+};
+
+export default SentenceStartersPage;
+
+/* pre AI Tutor version
+
 import { useState, useEffect } from "react";
 import PassageArray from "../components/Passage_Array_3";
+import AITutor from "../utils/AITutor";
 
 const SentenceStartersPage = ({ renderWordWithSpan, setShowNextButton }) => {
   // Find the relevant passage with sentence starters
@@ -56,6 +77,7 @@ const SentenceStartersPage = ({ renderWordWithSpan, setShowNextButton }) => {
     <div className="sentence_builder" style={{ textAlign: "center", marginTop: "20px" }}>
       <h2>Practice Exercise: Sentence Starters</h2>
 
+      <AITutor />
       {currentPage === 1 && (
         <>
           {sentence_starters_word_1 && <h3>{renderWordWithSpan(sentence_starters_word_1)}</h3>}
@@ -80,7 +102,7 @@ const SentenceStartersPage = ({ renderWordWithSpan, setShowNextButton }) => {
         </>
       )}
 
-      <div style={{ marginTop: "20px" }}>
+            <div style={{ marginTop: "20px" }}>
         <button
           onClick={handlePreviousPage}
           disabled={currentPage === 1}
@@ -99,6 +121,7 @@ const SentenceStartersPage = ({ renderWordWithSpan, setShowNextButton }) => {
 };
 
 export default SentenceStartersPage;
+*/
 /*
 import React, { useState } from "react";
 import PassageArray from "../components/Passage_Array";

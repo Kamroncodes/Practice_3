@@ -22,8 +22,7 @@ import ClozeExampleSentence from './pages/Pr_Exc_clozeexamplesentence.jsx';
 import SentenceStartersPage from './pages/Pr_Exc_sentencestarters.jsx';
 import Practice_Ex_clozenewstory from './pages/Pr_Exc_clozenewstory.jsx';
 import SpellingPage from './pages/Pr_Exc_spelling.jsx';
-
-
+import AITutor from './utils/AITutor.jsx';
 
 
 
@@ -35,6 +34,7 @@ function App() {
   const currentPassage = PassageArray[currentIndex];
   const [showNextButton, setShowNextButton] = useState(true);
   const [showNavBar, setShowNavBar] = useState(false);
+  const [isSpellingComplete, setIsSpellingComplete] = useState(false);
 
 const handleNavigation = (direction) => {
   if (direction === "next") {
@@ -51,7 +51,17 @@ const handleNavigation = (direction) => {
       setCurrentIndex(currentIndex + 1);
     }
   } else if (direction === "back") {
-    if (currentPassage.page === "Practice_Main_Page") {
+      if (currentPassage.type === "ending_page") {
+        // Navigate back to the title page
+        const titlePageIndex = PassageArray.findIndex(
+          (passage) => passage.type === "title_page"
+        );
+        if (titlePageIndex !== -1) {
+          setCurrentIndex(titlePageIndex);
+        } else {
+          console.error("Title Page not found in PassageArray");
+        }
+  } else if (currentPassage.page === "Practice_Main_Page") {
       // Navigate back to the Review Exercise Selection Page
       const reviewSelectionIndex = PassageArray.findIndex(
         (passage) => passage.type === "review" && passage.page === "Review_Main_Page"
@@ -99,6 +109,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
   return (
     <>
 
+
  {!showNavBar && (
     <button
       className="nav-toggle-button"
@@ -119,7 +130,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
     </button>
   )}
 
-  {/* Render the NavBar if showNavBar is true */}
+
   {showNavBar && (
     <NavBar
       passages={PassageArray}
@@ -460,10 +471,23 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
       )}
 
       {currentPassage.page === "Practice_Make_Your_Own_Sentence_Exercise" && (
+        <>
           <SentenceStartersPage 
             renderWordWithSpan={renderWordWithSpan}
             setShowNextButton={setShowNextButton}
           />
+          <iframe
+            src="https://cdn.botpress.cloud/webchat/v2.4/shareable.html?configUrl=https://files.bpcontent.cloud/2025/05/13/10/20250513102849-A94BP1U1.json"
+            style={{
+            position: "static",
+            width: "90vw",
+            height: "70vh",
+            border: "none",
+            }}
+            title="Botpress Chatbot"
+            allow="clipboard-write"
+          />
+        </>
       )}
 
       {currentPassage.page === "Practice_Fill-in-the-blank_New_Story_Exercise" && (
@@ -479,7 +503,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
       {currentPassage.page === "Practice_Spelling_Exercise" && (
       <SpellingPage 
         renderWordWithSpan={renderWordWithSpan}
-        setShowNextButton={setShowNextButton}
+        setIsSpellingComplete={setIsSpellingComplete}
       />
       )}
 
@@ -487,13 +511,33 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
     )}
 
 
+    {currentPassage.type === "ending_page" && (
+      <>
+        <div className="ending_page_text">
+          <h1>{renderWordWithSpan(currentPassage.lesson_title)}</h1>
+              
+          {currentPassage.instructions.map((instruction, index) => (
+          <p key={index}>{renderWordWithSpan(instruction)}</p>
+          ))}
+
+        </div>
+        <img src={currentPassage.ending_page_img} alt="Ending Page Image" />
+      </>
+    )}
+
     <NavButtons 
       onBack={() => handleNavigation("back")}
       onNext={() => handleNavigation("next")}
-      hideBack={
-        currentIndex === 0 ||
-          (currentPassage.type === "review" && currentPassage.exercise === "cloze_story")}
-      hideNext={!showNextButton || currentIndex === PassageArray.length - 1 || currentPassage.exercise_selection}
+        hideBack={
+    currentIndex === 0 ||
+      (currentPassage.type === "review" && currentPassage.exercise === "cloze_story")
+  }
+  hideNext={
+    !showNextButton || 
+    currentIndex === PassageArray.length - 1 || 
+    currentPassage.exercise_selection || 
+    (currentPassage.page === "Practice_Spelling_Exercise" && !isSpellingComplete) // Hide "Next" until spelling is complete
+  }
         backButtonText={
           currentPassage.type === "review" && currentPassage.exercise === "matching_translation"
             ? "Back to Exercise Selection Menu" : "Back" }

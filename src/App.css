@@ -40,3 +40,22 @@
 .read-the-docs {
   color: #888;
 }
+
+      /* AI CHAT BOT */
+
+#webchat .bpFab,
+#webchat .bpFabIcon {
+  display: none !important;
+}
+
+#webchat {
+  position: static !important;
+  width: 90vw;
+  height: 70vh;
+}
+
+#webchat iframe {
+  position: static;
+  height: 100%;
+  width: 100%;
+}
