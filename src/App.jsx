@@ -844,16 +844,3 @@ export default App
     </>
     )}
 */
-
-      /* IMAGES */
-/*
-import CarBg1 from '../public/images/Car-Bg1.svg';
-import CarBg2 from '../public/images/Car-Bg2.svg';
-import CarFg from '../public/images/Car-Fg.svg';
-import ClassBg from '../public/images/Class-Bg.svg';
-import ClassBg1 from '../public/images/Class-Bg1.svg';
-import ClassBg2 from '../public/images/Class-Bg2.svg';
-import ClassFg1 from '../public/images/Class-Fg1.svg';
-import ClassFg2 from '../public/images/Class-Fg2.svg';
-import ClassFg3 from '../public/images/Class-Fg3.svg';
-*/
