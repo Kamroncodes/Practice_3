@@ -24,18 +24,7 @@ import SentenceStartersPage from './pages/Pr_Exc_sentencestarters.jsx';
 import Practice_Ex_clozenewstory from './pages/Pr_Exc_clozenewstory.jsx';
 import SpellingPage from './pages/Pr_Exc_spelling.jsx';
 
-      /* IMAGES */
-/*
-import CarBg1 from '../public/images/Car-Bg1.svg';
-import CarBg2 from '../public/images/Car-Bg2.svg';
-import CarFg from '../public/images/Car-Fg.svg';
-import ClassBg from '../public/images/Class-Bg.svg';
-import ClassBg1 from '../public/images/Class-Bg1.svg';
-import ClassBg2 from '../public/images/Class-Bg2.svg';
-import ClassFg1 from '../public/images/Class-Fg1.svg';
-import ClassFg2 from '../public/images/Class-Fg2.svg';
-import ClassFg3 from '../public/images/Class-Fg3.svg';
-*/
+
       /* TITLE PAGE BIG STEP BUTTONS */
 
 const vocabIndex = PassageArray.findIndex(p => p.type === "vocabulary_page" && p.page === "Vocabulary_Main_Page");
@@ -854,4 +843,17 @@ export default App
       </div>           
     </>
     )}
+*/
+
+      /* IMAGES */
+/*
+import CarBg1 from '../public/images/Car-Bg1.svg';
+import CarBg2 from '../public/images/Car-Bg2.svg';
+import CarFg from '../public/images/Car-Fg.svg';
+import ClassBg from '../public/images/Class-Bg.svg';
+import ClassBg1 from '../public/images/Class-Bg1.svg';
+import ClassBg2 from '../public/images/Class-Bg2.svg';
+import ClassFg1 from '../public/images/Class-Fg1.svg';
+import ClassFg2 from '../public/images/Class-Fg2.svg';
+import ClassFg3 from '../public/images/Class-Fg3.svg';
 */
