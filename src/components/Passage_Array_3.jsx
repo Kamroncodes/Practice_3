@@ -4,7 +4,7 @@ const PassageArray_raw = [
         title_page_title: "School Presentation",
         title_page_img: "images/Title-Fg1.svg",
         title_page_instructions: ["Step 1: Learn the vocabulary words", "Step 2: Read the story", "Step 3: Review", "Step 4: Practice the vocabulary",],
-        title_page_icons: ["./public/images/vocab_icon.png", "./public/images/story_icon.png", "./public/images/review_icon.png", "./public/images/practice_icon.png",],
+        title_page_icons: ["images/vocab_icon.png", "images/story_icon.png", "images/review_icon.png", "images/practice_icon.png",],
       },
     {type: "vocabulary_page",
      page: "Vocabulary_Main_Page",
