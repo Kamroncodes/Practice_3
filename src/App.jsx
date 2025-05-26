@@ -380,7 +380,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         speed={0}
         style={{
         zIndex: -1,
-        backgroundImage: `url(${ClassBg})`,
+        backgroundImage: `url(${import.meta.env.BASE_URL}images/Class-Bg.svg)`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         }}>
