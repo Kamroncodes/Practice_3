@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import './App.css'
-import { Parallax } from "react-parallax"
+// import { Parallax } from "react-parallax"
+import { Parallax, ParallaxLayer } from "@react-spring/parallax";
 
       /* UTILITIES & FUNCTIONS */
       
@@ -22,8 +23,27 @@ import ClozeExampleSentence from './pages/Pr_Exc_clozeexamplesentence.jsx';
 import SentenceStartersPage from './pages/Pr_Exc_sentencestarters.jsx';
 import Practice_Ex_clozenewstory from './pages/Pr_Exc_clozenewstory.jsx';
 import SpellingPage from './pages/Pr_Exc_spelling.jsx';
-import AITutor from './utils/AITutor.jsx';
 
+      /* IMAGES */
+
+import CarBg1 from '../public/images/Car-Bg1.svg';
+import CarBg2 from '../public/images/Car-Bg2.svg';
+import CarFg from '../public/images/Car-Fg.svg';
+import ClassBg from '../public/images/Class-Bg.svg';
+import ClassBg1 from '../public/images/Class-Bg1.svg';
+import ClassBg2 from '../public/images/Class-Bg2.svg';
+import ClassFg1 from '../public/images/Class-Fg1.svg';
+import ClassFg2 from '../public/images/Class-Fg2.svg';
+import ClassFg3 from '../public/images/Class-Fg3.svg';
+
+      /* TITLE PAGE BIG STEP BUTTONS */
+
+const vocabIndex = PassageArray.findIndex(p => p.type === "vocabulary_page" && p.page === "Vocabulary_Main_Page");
+const storyIndex = PassageArray.findIndex(p => p.type === "story");
+const reviewIndex = PassageArray.findIndex(p => p.type === "review" && p.page === "Review_Main_Page");
+const practiceIndex = PassageArray.findIndex(p => p.type === "practice" && p.page === "Practice_Main_Page");
+
+const instructionTargets = [vocabIndex, storyIndex, reviewIndex, practiceIndex];
 
 
 function App() {
@@ -116,8 +136,10 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
       onClick={() => setShowNavBar(true)}
       style={{
         position: "absolute",
-        top: "10px",
-        left: "10px",
+        padding: "0.5rem",
+        margin: "3vh auto 0 5vw",
+        top: "0px",
+        left: "0px",
         zIndex: 1001,
         background: "none",
         border: "none",
@@ -143,16 +165,21 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
   )}
 
     {currentPassage.type === "title_page" && (
-      <div className="title_page">
-        <div className="title_page_text">
-          <h1>{renderWordWithSpan(currentPassage.title_page_title)}</h1>
-              
-          {currentPassage.title_page_instructions.map((instruction, index) => (
-          <p key={index}>{renderWordWithSpan(instruction)}</p>
-          ))}
 
+      <div className="title_page">
+        <h1>{renderWordWithSpan(currentPassage.title_page_title)}</h1>
+        <div className="title_page_instructions">
+          <img id="title_page_img" src={currentPassage.title_page_img} alt="Title Page Welcome Image" />
+          {currentPassage.title_page_instructions.map((instruction, index) => (
+          <button className="instruction_box" key={index} onClick={() => setCurrentIndex(instructionTargets[index])}>
+            <img 
+              src={currentPassage.title_page_icons && currentPassage.title_page_icons[index]} 
+              alt={`Step ${index + 1} icon`} 
+              style={{ height: "80%", margin: "auto"}}/>
+            <p>{renderWordWithSpan(instruction)}</p>
+          </button>
+          ))}
         </div>
-        <img src={currentPassage.title_page_img} alt="Title Page Welcome Image" />
       </div>
     )}
 
@@ -231,32 +258,24 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
 
     {currentPassage.type === "story" && (
     <>  
-        
-      <Parallax
-        bgImage="/public/images/StudentIntro2.svg"
-        strength={50}
-        style={{
-        height: "100vh",
-        width: "100vw",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        zIndex: -1,
-        }}>
-      </Parallax>
+    <Parallax pages={13} style={{ top: '0', left: '0' }}>
 
-      <div className="passage_header">
+      <ParallaxLayer
+      offset={0}
+      factor={1}
+      speed={1}
+      >
+        <div className="passage_header">
 
         {currentPassage.lesson_title && (
         <h2 className="lesson_title">{renderWordWithSpan(currentPassage.lesson_title)}</h2>
         )}
 
       </div>
-
       <div className="story_body">
 
         {currentPassage.section_title && (
-        <h4 className="section_title">{renderWordWithSpan(currentPassage.section_title)}</h4>
+        <h2 className="section_title">{renderWordWithSpan(currentPassage.section_title)}</h2>
         )}
 
         {currentPassage.passage_title && (
@@ -270,23 +289,234 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         </div>
         )}
 
-        <img src="/public/images/DownArrow.gif" 
+        <div style={{ height: "20vh" }} />
+
+        <img src="./public/images/DownArrow.gif" 
           style={{
             marginTop: "1%",
             height: "80px",
         }}/>
-    
-        <div style={{ height: "50vh" }} />
-    
-          <div className="story_text_div" style={{ textAlign: "center" }}>
-            {currentPassage.story_text.map((story, index) => (
+        </div>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        sticky={{ start: 1, end: 2.25}}
+        offset={1}
+        factor={1.25}
+        speed={0}
+        style={{
+          zIndex: -1,
+          backgroundImage: `url(${CarBg1})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        sticky={{ start: 2.25, end: 4.5}}
+        offset={2.25}
+        factor={1.25}
+        speed={0}
+        style={{
+        zIndex: -1,
+        backgroundImage: `url(${CarBg2})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        }}>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        sticky={{ start: 1, end: 4.5}}
+        offset={1}
+        factor={1}
+        speed={0}
+        style={{
+        zIndex: -1,
+        backgroundImage: `url(${CarFg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        }}>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        offset={1.25}
+        factor={1.25}
+        speed={0.125}
+        style={{
+        }}>
+          <div style={{ height: "35vh" }} />
+          <div className="story_text_div parallax_text parallax_text_right">
+            {currentPassage.story_text.slice(0,2).map((story, index) => (
             <p key={index}>{renderWordWithSpan(story)}</p>))}
           </div>
-    
-        <div style={{ height: "100vh" }} />
+      </ParallaxLayer>
 
-        <p>THE END</p>
-      </div>           
+      <ParallaxLayer
+        offset={2.25}
+        factor={1}
+        speed={0.125}>
+          <div style={{ height: "30vh" }} />
+          <div className="story_text_div parallax_text parallax_text_right">
+            {currentPassage.story_text.slice(2,4).map((story, index) => (
+            <p key={index}>{renderWordWithSpan(story)}</p>))}
+          </div>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        offset={3.25}
+        factor={1}
+        speed={0.125}>
+          <div style={{ height: "30vh" }} />
+          <div className="story_text_div parallax_text parallax_text_right">
+            {currentPassage.story_text.slice(4,5).map((story, index) => (
+            <p key={index}>{renderWordWithSpan(story)}</p>))}
+          </div>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        sticky={{ start: 4.5, end: 11.75}}
+        offset={4.5}
+        factor={1}
+        speed={0}
+        style={{
+        zIndex: -1,
+        backgroundImage: `url(${ClassBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        }}>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        sticky={{ start: 4.5, end: 11.75}}
+        offset={4.5}
+        factor={1}
+        speed={0}
+        style={{
+        zIndex: 1,
+        backgroundImage: `url(${ClassBg1})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        }}>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        offset={4.5}
+        factor={1}
+        speed={0.125}>
+          <div style={{ height: "21vh" }} />
+          <div className="story_text_div parallax_text">
+            {currentPassage.story_text.slice(5,7).map((story, index) => (
+            <p key={index}>{renderWordWithSpan(story)}</p>))}
+          </div>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        offset={4.75}
+        factor={1}
+        speed={0.5}
+        style={{
+        zIndex: -1,
+        backgroundImage: `url(${ClassFg1})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        }}>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        offset={5.75}
+        factor={1}
+        speed={0.125}>
+          <div style={{ height: "30vh" }} />
+          <div className="story_text_div parallax_text">
+            {currentPassage.story_text.slice(7,10).map((story, index) => (
+            <p key={index}>{renderWordWithSpan(story)}</p>))}
+          </div>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        offset={6.75}
+        factor={1}
+        speed={0.125}>
+          <div style={{ height: "30vh" }} />
+          <div className="story_text_div parallax_text">
+            {currentPassage.story_text.slice(10,15).map((story, index) => (
+            <p key={index}>{renderWordWithSpan(story)}</p>))}
+          </div>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        offset={7.75}
+        factor={1}
+        speed={0.125}>
+          <div style={{ height: "30vh" }} />
+          <div className="story_text_div parallax_text">
+            {currentPassage.story_text.slice(15,20).map((story, index) => (
+            <p key={index}>{renderWordWithSpan(story)}</p>))}
+          </div>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        offset={9}
+        factor={1}
+        speed={0.5}>
+          <div style={{ height: "10vh" }} />
+          <div className="story_text_div parallax_text parallax_text_left">
+            {currentPassage.story_text.slice(20,22).map((story, index) => (
+            <p key={index}>{renderWordWithSpan(story)}</p>))}
+          </div>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        sticky={{ start: 9, end: 9}}
+        offset={9}
+        factor={1}
+        speed={0}
+        style={{
+        zIndex: -1,
+        backgroundImage: `url(${ClassFg2})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        }}>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        offset={10}
+        factor={1}
+        speed={0.125}>
+          <div style={{ height: "50vh" }} />
+          <div className="story_text_div parallax_text">
+            {currentPassage.story_text.slice(22,23).map((story, index) => (
+            <p key={index}>{renderWordWithSpan(story)}</p>))}
+          </div>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        sticky={{ start: 10.75, end: 11.75}}
+        offset={10.75}
+        factor={1}
+        speed={0}
+        style={{
+        zIndex: -1,
+        backgroundImage: `url(${ClassFg3})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        }}>
+      </ParallaxLayer>
+
+      <ParallaxLayer
+        offset={10.75}
+        factor={1}
+        speed={0.125}>
+          <div style={{ height: "30vh" }} />
+          <div className="story_text_div parallax_text parallax_text_left">
+            {currentPassage.story_text.slice(23,26).map((story, index) => (
+            <p key={index}>{renderWordWithSpan(story)}</p>))}
+          </div>
+      </ParallaxLayer>
+
+      </Parallax>
+
+      <div style={{ height: "125vh" }} />
     </>
     )}
 
@@ -529,18 +759,17 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
       onBack={() => handleNavigation("back")}
       onNext={() => handleNavigation("next")}
         hideBack={
-    currentIndex === 0 ||
-      (currentPassage.type === "review" && currentPassage.exercise === "cloze_story")
-  }
-  hideNext={
-    !showNextButton || 
-    currentIndex === PassageArray.length - 1 || 
-    currentPassage.exercise_selection || 
-    (currentPassage.page === "Practice_Spelling_Exercise" && !isSpellingComplete) // Hide "Next" until spelling is complete
-  }
+          currentIndex === 0 ||
+          (currentPassage.type === "review" && currentPassage.exercise === "cloze_story")
+        }
+        hideNext={
+          !showNextButton || 
+          currentIndex === PassageArray.length - 1 || 
+          currentPassage.exercise_selection || 
+          (currentPassage.page === "Practice_Spelling_Exercise" && !isSpellingComplete) // Hide "Next" until spelling is complete
+        }
         backButtonText={
-          currentPassage.type === "review" && currentPassage.exercise === "matching_translation"
-            ? "Back to Exercise Selection Menu" : "Back" }
+          currentPassage.type === "review" && currentPassage.exercise === "matching_translation" ? "Back to Exercise Selection Menu" : "Back" }
     />  
 
 
@@ -549,3 +778,80 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
 }
 
 export default App
+
+
+
+/* TESTING PARALLAX -- REMOVE SECOND PARALLAX TO WORK WITH JUST REGULAR BACKGROUND IMAGE
+
+      
+      <Parallax
+        bgImage={CarFg}
+        strength={50}
+        style={{
+        height: "100vh",
+        width: "100vw",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        zIndex: -1,
+        }}>
+      </Parallax>
+
+      <Parallax
+        bgImage={CarBg1}
+        strength={1}
+        style={{
+          height: "100vh",
+          width: "100vw",
+          zIndex: -2,
+          top: 0,
+          left: 0,
+          postion: "fixed",
+        }}>
+      </Parallax>
+
+      <div className="passage_header">
+
+        {currentPassage.lesson_title && (
+        <h2 className="lesson_title">{renderWordWithSpan(currentPassage.lesson_title)}</h2>
+        )}
+
+      </div>
+
+      <div className="story_body">
+
+        {currentPassage.section_title && (
+        <h4 className="section_title">{renderWordWithSpan(currentPassage.section_title)}</h4>
+        )}
+
+        {currentPassage.passage_title && (
+        <h2 className="passage_title">{renderWordWithSpan(currentPassage.passage_title)}</h2>
+        )}
+
+        {currentPassage.instructions && (
+        <div className="story_instructions">
+          {currentPassage.instructions.map((instruction, index) => (
+          <p key={index}>{renderWordWithSpan(instruction)}</p>))}
+        </div>
+        )}
+
+        <img src="/public/images/DownArrow.gif" 
+          style={{
+            marginTop: "1%",
+            height: "80px",
+        }}/>
+    
+        <div style={{ height: "50vh" }} />
+    
+          <div className="story_text_div" style={{ textAlign: "center" }}>
+            {currentPassage.story_text.map((story, index) => (
+            <p key={index}>{renderWordWithSpan(story)}</p>))}
+          </div>
+    
+        <div style={{ height: "100vh" }} />
+
+        <p>THE END</p>
+      </div>           
+    </>
+    )}
+*/

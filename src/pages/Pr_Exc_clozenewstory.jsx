@@ -67,8 +67,8 @@ const Practice_Ex_clozenewstory = ({
   };
 
   return (
-    <div className="story_text_div" style={{ textAlign: "center" }}>
-      <h2>Practice Exercise: Cloze New Story</h2>
+    <div className="story_text_div">
+      <h2 style={{ textAlign: "center" }}>Practice Exercise: Cloze New Story</h2>
       {new_story_text &&
         new_story_text.map((story, index) => (
           <p key={index}>
@@ -116,7 +116,7 @@ const Practice_Ex_clozenewstory = ({
         ))}
 
       {!allCorrect && (
-        <button onClick={checkAnswers} className="check-answers-button">
+        <button onClick={checkAnswers} className="check_answers_button">
           {review_button || "Check Answers"}
         </button>
       )}

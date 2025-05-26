@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import AITutor from "../utils/AITutor";
 
 
 const SentenceStartersPage = () => {
@@ -7,7 +5,8 @@ const SentenceStartersPage = () => {
   return (
     <div className="sentence_builder" style={{ textAlign: "center", marginTop: "20px" }}>
       <h2>Practice Exercise: Sentence Starters</h2>
-
+      <p>This is an AI language tutor designed to help you practice the vocabulary from the story.  Try making your own sentence using one of the vocabulary words.</p>
+      <p>Please give it time to load.</p>
       
 
     </div>

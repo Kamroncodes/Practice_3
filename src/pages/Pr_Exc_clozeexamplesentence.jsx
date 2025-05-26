@@ -61,6 +61,8 @@ const ClozeExampleSentence = ({
     setShowFeedback(true);
   };
 
+
+
   return (
     <div className="cloze_example_sentence_div" style={{ textAlign: "center" }}>
       <p>Practice Exercise 1</p>
@@ -110,15 +112,15 @@ const ClozeExampleSentence = ({
       ))}
 
       {!allCorrect && (
-        <button onClick={checkAnswers} className="check-answers-button">
+        <button onClick={checkAnswers} className="check_answers_button">
           {reviewButtonText || "Check Answers"}
         </button>
       )}
       {showFeedback && !allQuestionsAnswered && (
-        <p style={{ color: "red" }}>Not all questions have been answered!</p>
+        <p style={{ color: "yellow" }}>Not all questions have been answered!</p>
       )}
       {showFeedback && allQuestionsAnswered && !allCorrect && (
-        <p style={{ color: "orange" }}>Some answers are incorrect. Please try again!</p>
+        <p style={{ color: "red" }}>Some answers are incorrect. Please try again!</p>
       )}
       {allCorrect && <p style={{ color: "green" }}>All answers are correct!</p>}
     </div>
@@ -126,6 +128,7 @@ const ClozeExampleSentence = ({
 };
 
 export default ClozeExampleSentence;
+
 /*
 import React, { useState } from "react";
 import FindMatchingWords from "../utils/FindMatchingWords.jsx";

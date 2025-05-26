@@ -83,7 +83,87 @@ const allInputs = document.querySelectorAll(".fill-in-the-blank");
   };
 
 return (
-  <div className="story_text_div" style={{ textAlign: "center" }}>
+  <div className="story_text_div">
+  {storyText.map((story, index) => {
+  const words = story.split(/(\s+)/); // Split by spaces but keep spaces as tokens
+  return (
+    <p key={index}>
+      {words.map((word, wordIndex) => {
+        // Separate word and punctuation
+        const match = word.match(/^([a-zA-Z'-]+)([.,!?]*)$/);
+        const baseWord = match ? match[1] : word;
+        const punctuation = match ? match[2] : "";
+
+        const cleanedWord = cleanText(baseWord);
+        if (matchingWords.some((phrase) => cleanedWord === cleanText(phrase))) {
+          return (
+            <React.Fragment key={`${index}-${wordIndex}`}>
+              <select
+                data-key={`${index}-${wordIndex}`}
+                className="fill-in-the-blank"
+                defaultValue={""}
+                onChange={(e) => {
+                  setUserSelections((prev) => ({
+                    ...prev,
+                    [`${index}-${wordIndex}`]: e.target.value,
+                  }));
+                }}
+              >
+                <option value="">Select</option>
+                {vocabularyWordlist.map((vocabWord, vocabIndex) => {
+                  const cleanVocabWord = vocabWord.replace(/_/g, " ");
+                  return (
+                    <option key={vocabIndex} value={vocabWord}>
+                      {cleanVocabWord}
+                    </option>
+                  );
+                })}
+              </select>
+              {punctuation}{" "}
+            </React.Fragment>
+          );
+        } else {
+          return (
+            <React.Fragment key={`${index}-${wordIndex}`}>
+              {renderWordWithSpan(word)}{" "}
+            </React.Fragment>
+          );
+        }
+      })}
+    </p>
+  );
+})}
+
+
+      {!allCorrect && (
+        <div class="review_cloze_buttons_div">
+        <button onClick={checkAnswers} className="check_answers_button">
+          {reviewButtonText || "Check Answers"}
+        </button>
+        </div>
+      )}
+      {showFeedback && !allQuestionsAnswered && (
+        <p style={{ textAlign: "center" , color: "yellow" }}>Not all questions have been answered!</p>
+      )}
+      {showFeedback && allQuestionsAnswered && !allCorrect && (
+        <p style={{ textAlign: "center" , color: "red" }}>Some answers are incorrect. Please try again!</p>
+      )}
+      {allCorrect && <p style={{ textAlign: "center" , color: "green" }}>All answers are correct!</p>}
+
+      {/* Back Button */}
+      <button onClick={handleBack} className="back_button">
+        Back to Exercise Selection
+      </button>
+      </div>
+  );
+};
+
+export default Review_Ex_clozefromstory;
+
+
+/*
+return (
+  <div className="story_text_div" style={{ }}>
     {storyText.map((story, index) => {
       const words = story.split(/(\s+)/); // Split by spaces but keep spaces as tokens
       return (
@@ -109,7 +189,7 @@ return (
                   const cleanVocabWord = vocabWord.replace(/_/g, " "); // Replace underscores with spaces
                   return (
                     <option key={vocabIndex} value={vocabWord}>
-                    {cleanVocabWord} {/* Render without underscores */}
+                    {cleanVocabWord}
                     </option>
                   );
                   })}
@@ -128,29 +208,7 @@ return (
         </p>
       );
     })}
-
-      {!allCorrect && (
-        <button onClick={checkAnswers} className="check-answers-button">
-          {reviewButtonText || "Check Answers"}
-        </button>
-      )}
-      {showFeedback && !allQuestionsAnswered && (
-        <p style={{ color: "red" }}>Not all questions have been answered!</p>
-      )}
-      {showFeedback && allQuestionsAnswered && !allCorrect && (
-        <p style={{ color: "orange" }}>Some answers are incorrect. Please try again!</p>
-      )}
-      {allCorrect && <p style={{ color: "green" }}>All answers are correct!</p>}
-
-      {/* Back Button */}
-      <button onClick={handleBack} className="back_button">
-        Back to Exercise Selection
-      </button>
-    </div>
-  );
-};
-
-export default Review_Ex_clozefromstory;
+*/
 
 
 /*
@@ -202,3 +260,4 @@ export default Review_Ex_clozefromstory;
         </p>
       ))}
       */
+
