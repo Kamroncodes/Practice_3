@@ -169,7 +169,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
       <div className="title_page">
         <h1>{renderWordWithSpan(currentPassage.title_page_title)}</h1>
         <div className="title_page_instructions">
-          <img id="title_page_img" src={currentPassage.title_page_img} alt="Title Page Welcome Image" />
+          <img id="title_page_img" src={`${import.meta.env.BASE_URL}${currentPassage.title_page_img}`} alt="Title Page Welcome Image" />
           {currentPassage.title_page_instructions.map((instruction, index) => (
           <button className="instruction_box" key={index} onClick={() => setCurrentIndex(instructionTargets[index])}>
             <img 
