@@ -25,7 +25,7 @@ import Practice_Ex_clozenewstory from './pages/Pr_Exc_clozenewstory.jsx';
 import SpellingPage from './pages/Pr_Exc_spelling.jsx';
 
       /* IMAGES */
-
+/*
 import CarBg1 from '../public/images/Car-Bg1.svg';
 import CarBg2 from '../public/images/Car-Bg2.svg';
 import CarFg from '../public/images/Car-Fg.svg';
@@ -35,7 +35,7 @@ import ClassBg2 from '../public/images/Class-Bg2.svg';
 import ClassFg1 from '../public/images/Class-Fg1.svg';
 import ClassFg2 from '../public/images/Class-Fg2.svg';
 import ClassFg3 from '../public/images/Class-Fg3.svg';
-
+*/
       /* TITLE PAGE BIG STEP BUTTONS */
 
 const vocabIndex = PassageArray.findIndex(p => p.type === "vocabulary_page" && p.page === "Vocabulary_Main_Page");
@@ -291,7 +291,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
 
         <div style={{ height: "20vh" }} />
 
-        <img src="./public/images/DownArrow.gif" 
+        <img src={`url(${import.meta.env.BASE_URL}images/DownArrow.gif)`} 
           style={{
             marginTop: "1%",
             height: "80px",
@@ -306,7 +306,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         speed={0}
         style={{
           zIndex: -1,
-          backgroundImage: `url(${CarBg1})`,
+          backgroundImage: `url(${import.meta.env.BASE_URL}images/Car-Bg1.svg)`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}>
@@ -319,7 +319,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         speed={0}
         style={{
         zIndex: -1,
-        backgroundImage: `url(${CarBg2})`,
+        backgroundImage: `url(${import.meta.env.BASE_URL}images/Car-Bg2.svg)`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         }}>
@@ -332,7 +332,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         speed={0}
         style={{
         zIndex: -1,
-        backgroundImage: `url(${CarFg})`,
+        backgroundImage: `url(${import.meta.env.BASE_URL}images/Car-Fg.svg)`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         }}>
@@ -416,7 +416,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         speed={0.5}
         style={{
         zIndex: -1,
-        backgroundImage: `url(${ClassFg1})`,
+        backgroundImage: `url(${import.meta.env.BASE_URL}images/Class-Fg1.svg)`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         }}>
@@ -473,7 +473,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         speed={0}
         style={{
         zIndex: -1,
-        backgroundImage: `url(${ClassFg2})`,
+        backgroundImage: `url(${import.meta.env.BASE_URL}images/Class-Fg2.svg)`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         }}>
@@ -497,7 +497,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         speed={0}
         style={{
         zIndex: -1,
-        backgroundImage: `url(${ClassFg3})`,
+        backgroundImage: `url(${import.meta.env.BASE_URL}images/Class-Fg3.svg)`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         }}>
