@@ -69,7 +69,7 @@ button:focus {
 }
 
 .subtitle {
-  margin: 2vh auto 1px;
+  margin: 5vh auto 0;
 }
 
 .passage_title {
@@ -162,8 +162,33 @@ button:focus {
 
 .definitions , .translations , .examples {
   font-size: 1.25rem;
-  margin-top: 10vh;
+  margin: 1vh;
 }
+
+.definitions p, .translations p, .examples p {
+  margin: 0.5vh 0;
+}
+
+.definition_translation_box {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.definitions , .translations {
+  width: 40vw;
+  margin: 0 auto;
+}
+
+.examples {
+  text-align: left;
+}
+
+.example_body {
+  margin-top: 5vh;
+  display: grid;
+  justify-content: center;
+}
+
 
 .exercise_selection {
   display: grid;
