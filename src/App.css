@@ -31,10 +31,12 @@
 
 button {
   border: 0.5px solid #ffffffd0;
+  pointer-events: all;
 }
 
 .next_button {
   margin: 0 5vw 3vh auto;
+  pointer-events: all;
 }
 
 .back_button {

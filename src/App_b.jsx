@@ -1,6 +1,6 @@
       /* CORE */
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 // import { Parallax } from "react-parallax"
 import { Parallax, ParallaxLayer } from "@react-spring/parallax";
@@ -31,8 +31,8 @@ const vocabIndex = PassageArray.findIndex(p => p.type === "vocabulary_page" && p
 const storyIndex = PassageArray.findIndex(p => p.type === "story");
 const reviewIndex = PassageArray.findIndex(p => p.type === "review" && p.page === "Review_Main_Page");
 const practiceIndex = PassageArray.findIndex(p => p.type === "practice" && p.page === "Practice_Main_Page");
-
 const instructionTargets = [vocabIndex, storyIndex, reviewIndex, practiceIndex];
+
 
 
 function App() {
@@ -44,6 +44,7 @@ function App() {
   const [showNextButton, setShowNextButton] = useState(true);
   const [showNavBar, setShowNavBar] = useState(false);
   const [isSpellingComplete, setIsSpellingComplete] = useState(false);
+  const parallaxRef = useRef(null);
 
 const handleNavigation = (direction) => {
   if (direction === "next") {
@@ -95,6 +96,29 @@ const handleNavigation = (direction) => {
     }
   }
 };
+
+const handleScroll = () => {
+  const el = parallaxRef.current?.container?.current;
+  if (!el) return;
+  // Check if user is at (or very near) the bottom
+  if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
+    setShowNextButton(true);
+  }
+};
+
+useEffect(() => {
+  if (currentPassage.type === "story") {
+    setShowNextButton(false);
+
+    const el = parallaxRef.current?.container?.current;
+    if (el) {
+      el.addEventListener('scroll', handleScroll);
+      return () => el.removeEventListener('scroll', handleScroll);
+    }
+  } else {
+    setShowNextButton(true);
+  }
+}, [currentPassage]);
 
         /* POPUP URLS */
 
@@ -266,7 +290,10 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
 
     {currentPassage.type === "story" && (
     <>  
-    <Parallax pages={13} style={{ top: '0', left: '0' }}>
+    <Parallax 
+      ref={parallaxRef}
+      pages={13.5} 
+      style={{ top: '0', left: '0' }}>
 
       <ParallaxLayer
       offset={0}
@@ -313,6 +340,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         factor={1.25}
         speed={0}
         style={{
+          pointerEvents: "none",
           zIndex: -1,
           backgroundImage: `url(${import.meta.env.BASE_URL}images/Car-Bg1.svg)`,
           backgroundSize: 'cover',
@@ -326,6 +354,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         factor={1.25}
         speed={0}
         style={{
+          pointerEvents: "none",
         zIndex: -1,
         backgroundImage: `url(${import.meta.env.BASE_URL}images/Car-Bg2.svg)`,
         backgroundSize: 'cover',
@@ -339,6 +368,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         factor={1}
         speed={0}
         style={{
+          pointerEvents: "none",
         zIndex: -1,
         backgroundImage: `url(${import.meta.env.BASE_URL}images/Car-Fg.svg)`,
         backgroundSize: 'cover',
@@ -382,11 +412,12 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
       </ParallaxLayer>
 
       <ParallaxLayer
-        sticky={{ start: 4.5, end: 11.75}}
+        sticky={{ start: 4.5, end: 13}}
         offset={4.5}
         factor={1}
         speed={0}
         style={{
+          pointerEvents: "none",
         zIndex: -1,
         backgroundImage: `url(${import.meta.env.BASE_URL}images/Class-Bg.svg)`,
         backgroundSize: 'cover',
@@ -395,11 +426,12 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
       </ParallaxLayer>
 
       <ParallaxLayer
-        sticky={{ start: 4.5, end: 11.75}}
+        sticky={{ start: 4.5, end: 11.5}}
         offset={4.5}
         factor={1}
         speed={0}
         style={{
+          pointerEvents: "none",
         zIndex: 1,
         backgroundImage: `url(${import.meta.env.BASE_URL}images/Class-Bg1.svg)`,
         backgroundSize: 'cover',
@@ -423,6 +455,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         factor={1}
         speed={0.5}
         style={{
+        pointerEvents: "none",
         zIndex: -1,
         backgroundImage: `url(${import.meta.env.BASE_URL}images/Class-Fg1.svg)`,
         backgroundSize: 'cover',
@@ -480,6 +513,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         factor={1}
         speed={0}
         style={{
+        pointerEvents: "none",
         zIndex: -1,
         backgroundImage: `url(${import.meta.env.BASE_URL}images/Class-Fg2.svg)`,
         backgroundSize: 'cover',
@@ -499,11 +533,12 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
       </ParallaxLayer>
 
       <ParallaxLayer
-        sticky={{ start: 10.75, end: 11.75}}
+        sticky={{ start: 10.75, end: 11.5}}
         offset={10.75}
         factor={1}
         speed={0}
         style={{
+        pointerEvents: "none",
         zIndex: -1,
         backgroundImage: `url(${import.meta.env.BASE_URL}images/Class-Fg3.svg)`,
         backgroundSize: 'cover',
@@ -523,8 +558,7 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
       </ParallaxLayer>
 
       </Parallax>
-
-      <div style={{ height: "125vh" }} />
+      
     </>
     )}
 
