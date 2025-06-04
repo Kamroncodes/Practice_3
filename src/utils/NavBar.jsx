@@ -58,7 +58,7 @@ const NavBar = ({ passages, onNavigate, onClose }) => {
         return (
           <li key={passage.page} style={{ marginLeft: "20px" }}>
             <button onClick={() => onNavigate(originalIndex)}>
-              {passage.page.replace(/_/g, " ")} {/* Render subpages */}
+              {passage.passage_title.replace(/_/g, " ")} {/* Render subpages */}
             </button>
           </li>
         );
@@ -83,16 +83,35 @@ const NavBar = ({ passages, onNavigate, onClose }) => {
             Review {showReview ? "▲" : "▼"}
           </button>
         </li>
-        {showReview &&
-          passages
-            .filter((passage) => passage.type === "review")
-            .map((passage) => (
-              <li key={passage.page} style={{ marginLeft: "20px" }}>
-                <button onClick={() => onNavigate(passages.indexOf(passage))}>
-                  {passage.page.replace(/_/g, " ")}
-                </button>
-              </li>
-            ))}
+{showReview && (
+  <>
+    {/* Review Main Page */}
+    {passages
+      .filter((passage) => passage.page === "Review_Main_Page")
+      .map((passage) => (
+        <li key={passage.page} style={{ marginLeft: "20px" }}>
+          <button onClick={() => onNavigate(passages.indexOf(passage))}>
+            Review Main Page
+          </button>
+        </li>
+      ))}
+    {/* Review Subpages */}
+    {passages
+      .filter(
+        (passage) =>
+          passage.type === "review" &&
+          passage.page !== "Review_Main_Page"
+      )
+      .map((passage) => (
+        <li key={passage.page} style={{ marginLeft: "20px" }}>
+          <button onClick={() => onNavigate(passages.indexOf(passage))}>
+            {(passage.passage_title ||
+              passage.page.replace(/review/gi, "").replace(/_/g, " ").trim())}
+          </button>
+        </li>
+      ))}
+  </>
+)}
 
         {/* Practice Section */}
         <li>
@@ -101,18 +120,34 @@ const NavBar = ({ passages, onNavigate, onClose }) => {
           </button>
         </li>
         {showPractice &&
-          passages
-            .filter((passage) => passage.type === "practice")
-            .map((passage) => (
-              <li key={passage.page} style={{ marginLeft: "20px" }}>
-                <button onClick={() => onNavigate(passages.indexOf(passage))}>
-                  {passage.page.replace(/_/g, " ")}
-                </button>
-              </li>
-            ))}
-      </ul>
-    </div>
-  );
+        <>
+    {passages
+      .filter((passage) => passage.page === "Practice_Main_Page")
+      .map((passage) => (
+        <li key={passage.page} style={{ marginLeft: "20px" }}>
+          <button onClick={() => onNavigate(passages.indexOf(passage))}>
+            Practice Main Page
+          </button>
+        </li>
+      ))}
+    {passages
+      .filter(
+        (passage) =>
+          passage.type === "practice" &&
+          passage.page !== "Practice_Main_Page"
+      )
+      .map((passage) => (
+        <li key={passage.page} style={{ marginLeft: "20px" }}>
+          <button onClick={() => onNavigate(passages.indexOf(passage))}>
+            {(passage.passage_title ||
+              passage.page.replace(/practice/gi, "").replace(/_/g, " ").trim())}
+          </button>
+        </li>
+      ))}
+      </>}
+    </ul>
+  </div>
+);
 };
 
 export default NavBar;
