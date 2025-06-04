@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import FindMatchingWords from "../utils/FindMatchingWords";
 
 const ClozeExampleSentence = ({
@@ -6,16 +6,31 @@ const ClozeExampleSentence = ({
   vocabularyWordlist,
   renderWordWithSpan,
   reviewButtonText,
-  setShowNextButton, // Receive the callback
+  setShowNextButton, 
 }) => {
   const [userSelections, setUserSelections] = useState({});
   const [allCorrect, setAllCorrect] = useState(false);
   const [allQuestionsAnswered, setAllQuestionsAnswered] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const checkButtonRef = useRef();
 
   const cleanText = (text) => text.replace(/[^a-zA-Z]/g, "").toLowerCase().trim();
 
   const matchingWords = FindMatchingWords(exampleSentences, vocabularyWordlist);
+
+
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        if (checkButtonRef.current) {
+          checkButtonRef.current.click();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   useEffect(() => {
     // Hide the "Next" button when the component is mounted
@@ -112,7 +127,7 @@ const ClozeExampleSentence = ({
       ))}
 
       {!allCorrect && (
-        <button onClick={checkAnswers} className="check_answers_button">
+        <button ref={checkButtonRef} onClick={checkAnswers} className="check_answers_button">
           {reviewButtonText || "Check Answers"}
         </button>
       )}

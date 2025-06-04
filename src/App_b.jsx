@@ -24,6 +24,11 @@ import SentenceStartersPage from './pages/Pr_Exc_sentencestarters.jsx';
 import Practice_Ex_clozenewstory from './pages/Pr_Exc_clozenewstory.jsx';
 import SpellingPage from './pages/Pr_Exc_spelling.jsx';
 
+      /* AUDIO PLAYER */
+import AudioPlayer, { RHAP_UI } from 'react-h5-audio-player';
+import 'react-h5-audio-player/lib/styles.css';
+
+
 
       /* TITLE PAGE BIG STEP BUTTONS */
 
@@ -45,9 +50,46 @@ function App() {
   const [showNavBar, setShowNavBar] = useState(false);
   const [isSpellingComplete, setIsSpellingComplete] = useState(false);
   const parallaxRef = useRef(null);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [expandedIndex, setExpandedIndex] = useState(null);
+  const audioRefs = useRef([]);
+
+// State and effect
+const [playbackRates, setPlaybackRates] = useState([]);
+useEffect(() => {
+  const storyTextLength = Array.isArray(currentPassage.story_text) ? currentPassage.story_text.length : 0;
+  setPlaybackRates(Array(storyTextLength).fill(1));
+}, [currentPassage]);
+
+// Handler 
+const handleRateChange = (idx, value) => {
+  const newRates = [...playbackRates];
+  newRates[idx] = value;
+  setPlaybackRates(newRates);
+  if (audioRefs.current[idx]) {
+    audioRefs.current[idx].audio.current.playbackRate = value;
+  }
+};
 
 const handleNavigation = (direction) => {
   if (direction === "next") {
+    // If on one of the four practice exercise pages, go to ending page
+    if (
+      [
+        "Practice_Fill-in-the-blank_Example_Sentence_Exercise",
+        "Practice_Make_Your_Own_Sentence_Exercise",
+        "Practice_Fill-in-the-blank_New_Story_Exercise",
+        "Practice_Spelling_Exercise"
+      ].includes(currentPassage.page)
+    ) {
+      const endingPageIndex = PassageArray.findIndex(
+        (passage) => passage.type === "ending_page"
+      );
+      if (endingPageIndex !== -1) {
+        setCurrentIndex(endingPageIndex);
+        return;
+      }
+    }
     if (currentPassage.type === "review" && currentPassage.exercise === "matching_translation") {
       const practiceSelectionIndex = PassageArray.findIndex(
         (passage) => passage.type === "practice" && passage.exercise_selection
@@ -61,17 +103,17 @@ const handleNavigation = (direction) => {
       setCurrentIndex(currentIndex + 1);
     }
   } else if (direction === "back") {
-      if (currentPassage.type === "ending_page") {
-        // Navigate back to the title page
-        const titlePageIndex = PassageArray.findIndex(
-          (passage) => passage.type === "title_page"
-        );
-        if (titlePageIndex !== -1) {
-          setCurrentIndex(titlePageIndex);
-        } else {
-          console.error("Title Page not found in PassageArray");
-        }
-  } else if (currentPassage.page === "Practice_Main_Page") {
+    if (currentPassage.type === "ending_page") {
+      // Navigate back to the title page
+      const titlePageIndex = PassageArray.findIndex(
+        (passage) => passage.type === "title_page"
+      );
+      if (titlePageIndex !== -1) {
+        setCurrentIndex(titlePageIndex);
+      } else {
+        console.error("Title Page not found in PassageArray");
+      }
+    } else if (currentPassage.page === "Practice_Main_Page") {
       // Navigate back to the Review Exercise Selection Page
       const reviewSelectionIndex = PassageArray.findIndex(
         (passage) => passage.type === "review" && passage.page === "Review_Main_Page"
@@ -119,6 +161,7 @@ useEffect(() => {
     setShowNextButton(true);
   }
 }, [currentPassage]);
+
 
         /* POPUP URLS */
 
@@ -248,9 +291,9 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
             ))}
         </div>
          )}
-        </div>
+      </div>
 
-              <div className="translation_box">
+      <div className="translation_box">
     
       {currentPassage.subtitle_3 && (
       <h4 className="subtitle">{renderWordWithSpan(currentPassage.subtitle_3)}</h4>
@@ -282,14 +325,13 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         )}
       </div>
 
-
-
       </>
     )}
 
 
     {currentPassage.type === "story" && (
     <>  
+
     <Parallax 
       ref={parallaxRef}
       pages={13.5} 
@@ -381,34 +423,199 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         factor={1.25}
         speed={0.125}
         style={{
-        }}>
-          <div style={{ height: "35vh" }} />
-          <div className="story_text_div parallax_text parallax_text_right">
-            {currentPassage.story_text.slice(0,2).map((story, index) => (
-            <p key={index}>{renderWordWithSpan(story)}</p>))}
+      }}>
+      <div style={{ height: "35vh" }} />
+      <div className="story_text_div parallax_text parallax_text_right">
+      {(() => {
+      const sliceStart = 0, sliceEnd = 2;
+      return currentPassage.story_text.slice(sliceStart, sliceEnd).map((story, index) => (
+        <div key={index + sliceStart} style={{ display: expandedIndex === index + sliceStart ? "block" : "flex", alignItems: "center", marginBottom: "1rem", transition: "display 0.7s" }}>
+          <p style={{ margin: 0 }}>{renderWordWithSpan(story)}</p>
+          <div
+            className={`audio_player_container${expandedIndex === index + sliceStart ? " expanded" : ""}`}
+            style={{
+              transition: "width 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
+              width: expandedIndex === index + sliceStart ? "350px" : "60px",
+              minWidth: expandedIndex === index + sliceStart ? "350px" : "60px",
+              maxWidth: expandedIndex === index + sliceStart ? "350px" : "60px",
+              overflow: "hidden",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}>
+            <AudioPlayer
+              ref={el => (audioRefs.current[index + sliceStart] = el)}
+              src={
+                currentPassage.story_audio
+                  ? `${import.meta.env.BASE_URL}audio/${currentPassage.story_audio[index + sliceStart]}`
+                  : `${import.meta.env.BASE_URL}audio/SA_${index + sliceStart + 1}.mp3`
+              }
+              showJumpControls={false}
+              customAdditionalControls={
+                expandedIndex === index + sliceStart
+                  ? [
+                  <div key="speed-slider" style={{ display: "flex", alignItems: "center", width: "125px", padding: "0 10px" }}>
+                    <label style={{ color: "#fff", fontSize: 12, marginRight: 4 }}>Speed</label>
+                    <input
+                      type="range"
+                      min="0.6"
+                      max="1.0"
+                      step="0.1"
+                      value={playbackRates[index + sliceStart]}
+                      onChange={e => handleRateChange(index + sliceStart, parseFloat(e.target.value))}
+                      style={{ width: 60 }}
+                    />
+                    <span style={{ color: "#fff", fontSize: 12, marginLeft: 4 }}>
+                    {playbackRates[index + sliceStart]}x
+                    </span>
+                  </div>
+                  ]
+                  : []
+              }
+              customVolumeControls={[]}
+            />
+            <img
+              src={`${import.meta.env.BASE_URL}images/expand-arrows.svg`}
+              style={{ height: "15px", cursor: "pointer" }}
+              onClick={() => setExpandedIndex(expandedIndex === index + sliceStart ? null : index + sliceStart)}
+            />
           </div>
+        </div>
+      ));
+      })()}
+      </div>
       </ParallaxLayer>
 
       <ParallaxLayer
         offset={2.25}
         factor={1}
         speed={0.125}>
-          <div style={{ height: "30vh" }} />
-          <div className="story_text_div parallax_text parallax_text_right">
-            {currentPassage.story_text.slice(2,4).map((story, index) => (
-            <p key={index}>{renderWordWithSpan(story)}</p>))}
+      <div style={{ height: "30vh" }} />
+      <div className="story_text_div parallax_text parallax_text_right">
+      {(() => {
+      const sliceStart = 2, sliceEnd = 4;
+      return currentPassage.story_text.slice(sliceStart, sliceEnd).map((story, index) => (
+        <div key={index + sliceStart} style={{ display: expandedIndex === index + sliceStart ? "block" : "flex", alignItems: "center", marginBottom: "1rem", transition: "display 0.7s" }}>
+          <p style={{ margin: 0 }}>{renderWordWithSpan(story)}</p>
+          <div
+            className={`audio_player_container${expandedIndex === index + sliceStart ? " expanded" : ""}`}
+            style={{
+              transition: "width 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
+              width: expandedIndex === index + sliceStart ? "350px" : "60px",
+              minWidth: expandedIndex === index + sliceStart ? "350px" : "60px",
+              maxWidth: expandedIndex === index + sliceStart ? "350px" : "60px",
+              overflow: "hidden",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}>
+            <AudioPlayer
+              ref={el => (audioRefs.current[index + sliceStart] = el)}
+              src={
+                currentPassage.story_audio
+                  ? `${import.meta.env.BASE_URL}audio/${currentPassage.story_audio[index + sliceStart]}`
+                  : `${import.meta.env.BASE_URL}audio/SA_${index + sliceStart + 1}.mp3`
+              }
+              showJumpControls={false}
+              customAdditionalControls={
+                expandedIndex === index + sliceStart
+                  ? [
+                  <div key="speed-slider" style={{ display: "flex", alignItems: "center", width: "125px", padding: "0 10px" }}>
+                    <label style={{ color: "#fff", fontSize: 12, marginRight: 4 }}>Speed</label>
+                    <input
+                      type="range"
+                      min="0.6"
+                      max="1.0"
+                      step="0.1"
+                      value={playbackRates[index + sliceStart]}
+                      onChange={e => handleRateChange(index + sliceStart, parseFloat(e.target.value))}
+                      style={{ width: 60 }}
+                    />
+                    <span style={{ color: "#fff", fontSize: 12, marginLeft: 4 }}>
+                    {playbackRates[index + sliceStart]}x
+                    </span>
+                  </div>
+                  ]
+                  : []
+              }
+              customVolumeControls={[]}
+            />
+            <img
+              src={`${import.meta.env.BASE_URL}images/expand-arrows.svg`}
+              style={{ height: "15px", cursor: "pointer" }}
+              onClick={() => setExpandedIndex(expandedIndex === index + sliceStart ? null : index + sliceStart)}
+            />
           </div>
+        </div>
+      ));
+      })()}
+      </div>
       </ParallaxLayer>
 
       <ParallaxLayer
         offset={3.25}
         factor={1}
         speed={0.125}>
-          <div style={{ height: "30vh" }} />
-          <div className="story_text_div parallax_text parallax_text_right">
-            {currentPassage.story_text.slice(4,5).map((story, index) => (
-            <p key={index}>{renderWordWithSpan(story)}</p>))}
+      <div style={{ height: "30vh" }} />
+      <div className="story_text_div parallax_text parallax_text_right">
+      {(() => {
+      const sliceStart = 4, sliceEnd = 5;
+      return currentPassage.story_text.slice(sliceStart, sliceEnd).map((story, index) => (
+        <div key={index + sliceStart} style={{ display: expandedIndex === index + sliceStart ? "block" : "flex", alignItems: "center", marginBottom: "1rem", transition: "display 0.7s" }}>
+          <p style={{ margin: 0 }}>{renderWordWithSpan(story)}</p>
+          <div
+            className={`audio_player_container${expandedIndex === index + sliceStart ? " expanded" : ""}`}
+            style={{
+              transition: "width 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
+              width: expandedIndex === index + sliceStart ? "350px" : "60px",
+              minWidth: expandedIndex === index + sliceStart ? "350px" : "60px",
+              maxWidth: expandedIndex === index + sliceStart ? "350px" : "60px",
+              overflow: "hidden",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}>
+            <AudioPlayer
+              ref={el => (audioRefs.current[index + sliceStart] = el)}
+              src={
+                currentPassage.story_audio
+                  ? `${import.meta.env.BASE_URL}audio/${currentPassage.story_audio[index + sliceStart]}`
+                  : `${import.meta.env.BASE_URL}audio/SA_${index + sliceStart + 1}.mp3`
+              }
+              showJumpControls={false}
+              customAdditionalControls={
+                expandedIndex === index + sliceStart
+                  ? [
+                  <div key="speed-slider" style={{ display: "flex", alignItems: "center", width: "125px", padding: "0 10px" }}>
+                    <label style={{ color: "#fff", fontSize: 12, marginRight: 4 }}>Speed</label>
+                    <input
+                      type="range"
+                      min="0.6"
+                      max="1.0"
+                      step="0.1"
+                      value={playbackRates[index + sliceStart]}
+                      onChange={e => handleRateChange(index + sliceStart, parseFloat(e.target.value))}
+                      style={{ width: 60 }}
+                    />
+                    <span style={{ color: "#fff", fontSize: 12, marginLeft: 4 }}>
+                    {playbackRates[index + sliceStart]}x
+                    </span>
+                  </div>
+                  ]
+                  : []
+              }
+              customVolumeControls={[]}
+            />
+            <img
+              src={`${import.meta.env.BASE_URL}images/expand-arrows.svg`}
+              style={{ height: "15px", cursor: "pointer" }}
+              onClick={() => setExpandedIndex(expandedIndex === index + sliceStart ? null : index + sliceStart)}
+            />
           </div>
+        </div>
+      ));
+      })()}
+      </div>
       </ParallaxLayer>
 
       <ParallaxLayer
@@ -444,10 +651,65 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         factor={1}
         speed={0.125}>
           <div style={{ height: "21vh" }} />
-          <div className="story_text_div parallax_text">
-            {currentPassage.story_text.slice(5,7).map((story, index) => (
-            <p key={index}>{renderWordWithSpan(story)}</p>))}
+      <div className="story_text_div parallax_text">
+      {(() => {
+      const sliceStart = 5, sliceEnd = 7;
+      return currentPassage.story_text.slice(sliceStart, sliceEnd).map((story, index) => (
+        <div key={index + sliceStart} style={{ display: expandedIndex === index + sliceStart ? "block" : "flex", alignItems: "center", marginBottom: "1rem", transition: "display 0.7s" }}>
+          <p style={{ margin: 0 }}>{renderWordWithSpan(story)}</p>
+          <div
+            className={`audio_player_container${expandedIndex === index + sliceStart ? " expanded" : ""}`}
+            style={{
+              transition: "width 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
+              width: expandedIndex === index + sliceStart ? "350px" : "60px",
+              minWidth: expandedIndex === index + sliceStart ? "350px" : "60px",
+              maxWidth: expandedIndex === index + sliceStart ? "350px" : "60px",
+              overflow: "hidden",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}>
+            <AudioPlayer
+              ref={el => (audioRefs.current[index + sliceStart] = el)}
+              src={
+                currentPassage.story_audio
+                  ? `${import.meta.env.BASE_URL}audio/${currentPassage.story_audio[index + sliceStart]}`
+                  : `${import.meta.env.BASE_URL}audio/SA_${index + sliceStart + 1}.mp3`
+              }
+              showJumpControls={false}
+              customAdditionalControls={
+                expandedIndex === index + sliceStart
+                  ? [
+                  <div key="speed-slider" style={{ display: "flex", alignItems: "center", width: "125px", padding: "0 10px" }}>
+                    <label style={{ color: "#fff", fontSize: 12, marginRight: 4 }}>Speed</label>
+                    <input
+                      type="range"
+                      min="0.6"
+                      max="1.0"
+                      step="0.1"
+                      value={playbackRates[index + sliceStart]}
+                      onChange={e => handleRateChange(index + sliceStart, parseFloat(e.target.value))}
+                      style={{ width: 60 }}
+                    />
+                    <span style={{ color: "#fff", fontSize: 12, marginLeft: 4 }}>
+                    {playbackRates[index + sliceStart]}x
+                    </span>
+                  </div>
+                  ]
+                  : []
+              }
+              customVolumeControls={[]}
+            />
+            <img
+              src={`${import.meta.env.BASE_URL}images/expand-arrows.svg`}
+              style={{ height: "15px", cursor: "pointer" }}
+              onClick={() => setExpandedIndex(expandedIndex === index + sliceStart ? null : index + sliceStart)}
+            />
           </div>
+        </div>
+      ));
+      })()}
+      </div>
       </ParallaxLayer>
 
       <ParallaxLayer
@@ -468,10 +730,65 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
         factor={1}
         speed={0.125}>
           <div style={{ height: "30vh" }} />
-          <div className="story_text_div parallax_text">
-            {currentPassage.story_text.slice(7,10).map((story, index) => (
-            <p key={index}>{renderWordWithSpan(story)}</p>))}
+      <div className="story_text_div parallax_text">
+      {(() => {
+      const sliceStart = 7, sliceEnd = 10;
+      return currentPassage.story_text.slice(sliceStart, sliceEnd).map((story, index) => (
+        <div key={index + sliceStart} style={{ display: expandedIndex === index + sliceStart ? "block" : "flex", alignItems: "center", marginBottom: "1rem", transition: "display 0.7s" }}>
+          <p style={{ margin: 0 }}>{renderWordWithSpan(story)}</p>
+          <div
+            className={`audio_player_container${expandedIndex === index + sliceStart ? " expanded" : ""}`}
+            style={{
+              transition: "width 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
+              width: expandedIndex === index + sliceStart ? "350px" : "60px",
+              minWidth: expandedIndex === index + sliceStart ? "350px" : "60px",
+              maxWidth: expandedIndex === index + sliceStart ? "350px" : "60px",
+              overflow: "hidden",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}>
+            <AudioPlayer
+              ref={el => (audioRefs.current[index + sliceStart] = el)}
+              src={
+                currentPassage.story_audio
+                  ? `${import.meta.env.BASE_URL}audio/${currentPassage.story_audio[index + sliceStart]}`
+                  : `${import.meta.env.BASE_URL}audio/SA_${index + sliceStart + 1}.mp3`
+              }
+              showJumpControls={false}
+              customAdditionalControls={
+                expandedIndex === index + sliceStart
+                  ? [
+                  <div key="speed-slider" style={{ display: "flex", alignItems: "center", width: "125px", padding: "0 10px" }}>
+                    <label style={{ color: "#fff", fontSize: 12, marginRight: 4 }}>Speed</label>
+                    <input
+                      type="range"
+                      min="0.6"
+                      max="1.0"
+                      step="0.1"
+                      value={playbackRates[index + sliceStart]}
+                      onChange={e => handleRateChange(index + sliceStart, parseFloat(e.target.value))}
+                      style={{ width: 60 }}
+                    />
+                    <span style={{ color: "#fff", fontSize: 12, marginLeft: 4 }}>
+                    {playbackRates[index + sliceStart]}x
+                    </span>
+                  </div>
+                  ]
+                  : []
+              }
+              customVolumeControls={[]}
+            />
+            <img
+              src={`${import.meta.env.BASE_URL}images/expand-arrows.svg`}
+              style={{ height: "15px", cursor: "pointer" }}
+              onClick={() => setExpandedIndex(expandedIndex === index + sliceStart ? null : index + sliceStart)}
+            />
           </div>
+        </div>
+      ));
+      })()}
+      </div>
       </ParallaxLayer>
 
       <ParallaxLayer
@@ -810,8 +1127,18 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
           currentPassage.exercise_selection || 
           (currentPassage.page === "Practice_Spelling_Exercise" && !isSpellingComplete) // Hide "Next" until spelling is complete
         }
-        backButtonText={
-          currentPassage.type === "review" && currentPassage.exercise === "matching_translation" ? "Back to Exercise Selection Menu" : "Back" }
+        nextButtonText={
+        [
+        "Practice_Fill-in-the-blank_Example_Sentence_Exercise",
+        "Practice_Make_Your_Own_Sentence_Exercise",
+        "Practice_Fill-in-the-blank_New_Story_Exercise",
+        "Practice_Spelling_Exercise"
+        ].includes(currentPassage.page)
+        ? "Finish the lesson"
+        : currentPassage.type === "title_page"
+        ? "Let's Start!"
+        : undefined
+        }
     />  
 
 
@@ -820,3 +1147,144 @@ const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
 }
 
 export default App
+
+/*
+
+      <ParallaxLayer
+        offset={2.25}
+        factor={1}
+        speed={0.125}>
+          <div style={{ height: "30vh" }} />
+          <div className="story_text_div parallax_text parallax_text_right">
+            {currentPassage.story_text.slice(2,4).map((story, index) => (
+            <div key={index + 2}>
+            <div key={index} style={{ display: expandedIndex === index ? "block" : "flex", alignItems: "center", marginBottom: "1rem", transition: "display 0.7s" }}>
+            <p style={{ margin: 0 }}>{renderWordWithSpan(story)}</p>
+            <div
+              className={`audio_player_container${expandedIndex === index ? " expanded" : ""}`}
+              style={{
+                transition: "width 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
+                width: expandedIndex === index ? "350px" : "60px",
+                minWidth: expandedIndex === index ? "350px" : "60px",
+                maxWidth: expandedIndex === index ? "350px" : "60px",
+                overflow: "hidden",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+              }}>
+            <AudioPlayer
+              ref={el => (audioRefs.current[index + 2] = el)}
+              src={
+                currentPassage.story_audio
+                ? `${import.meta.env.BASE_URL}audio/${currentPassage.story_audio[index + 2]}`
+                : `${import.meta.env.BASE_URL}audio/SA_${index + 2}.mp3`
+              }
+              showJumpControls={false}
+              customAdditionalControls={
+                expandedIndex === index + 2
+                ? [
+              <div key="speed-slider" style={{ display: "flex", alignItems: "center", width: "125px", padding: "0 10px" }}>
+              <label style={{ color: "#fff", fontSize: 12, marginRight: 4 }}>Speed</label>
+              <input
+              type="range"
+              min="0.6"
+              max="1.0"
+              step="0.1"
+              value={playbackRates[index]}
+              onChange={e => handleRateChange(index, parseFloat(e.target.value))}
+              style={{ width: 60 }}
+              />
+              <span style={{ color: "#fff", fontSize: 12, marginLeft: 4 }}>
+               {playbackRates[index]}x
+              </span>
+              </div>
+              ]
+              : []
+              }
+              customVolumeControls={[]}
+            />
+          <img
+            src={`${import.meta.env.BASE_URL}images/expand-arrows.svg`}
+            style={{ height: "15px", cursor: "pointer" }}
+            onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
+          />
+          </div>
+        </div>
+        </div>
+        ))}
+          </div>
+          
+      </ParallaxLayer>
+
+*/
+/*
+      <ParallaxLayer
+        offset={1.25}
+        factor={1.25}
+        speed={0.125}
+        style={{
+        }}>
+          <div style={{ height: "35vh" }} />
+          <div className="story_text_div parallax_text parallax_text_right">
+            {currentPassage.story_text.slice(0, 2).map((story, index) => (
+            <div key={index} style={{ display: expandedIndex === index ? "block" : "flex", alignItems: "center", marginBottom: "1rem" , transition: "display 0.7s"}}>
+              <p style={{ margin: 0 }}>{renderWordWithSpan(story)}</p>
+              <div
+                className={`audio_player_container${expandedIndex === index ? " expanded" : ""}`}
+                style={{
+                  transition: "width 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
+                  width: expandedIndex === index ? "350px" : "60px",
+                  minWidth: expandedIndex === index ? "350px" : "60px",
+                  maxWidth: expandedIndex === index ? "350px" : "60px",
+                  overflow: "hidden",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center"}}>
+                <AudioPlayer
+                  src={`${import.meta.env.BASE_URL}audio/SA_${index + 1}.mp3`}
+                  showJumpControls={false}
+                  customAdditionalControls={[]}
+                  customVolumeControls={[]}
+                />
+                <img
+                  src={`${import.meta.env.BASE_URL}images/expand-arrows.svg`}
+                  style={{ height: "15px", cursor: "pointer" }}
+                  onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
+                />
+              </div>
+            </div>
+          ))}
+          </div>
+      </ParallaxLayer>
+
+*/
+
+/*
+    <div className="audio_player_container"
+          style={{
+        transition: "width 0.7s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
+        width: expandedIndex === index ? "350px" : "fit-content",
+        minWidth: expandedIndex === index ? "350px" : "fit-content",
+        maxWidth: expandedIndex === index ? "350px" : "fit-content",
+        overflow: "hidden",
+        display: "flex",
+        justifyContent: "center",
+      }}>
+      <AudioPlayer
+        src={`${import.meta.env.BASE_URL}audio/SA_${index + 1}.mp3`}
+        showJumpControls={false}
+        customAdditionalControls={[]}
+        customVolumeControls={[]}
+        customProgressBarSection={
+          expandedIndex === index
+            ? [
+                RHAP_UI.CURRENT_TIME,
+                RHAP_UI.PROGRESS_BAR,
+                RHAP_UI.DURATION,
+              ]
+            : []
+        }/>
+        <img src={`${import.meta.env.BASE_URL}images/expand-arrows.svg`} style={{ height: "15px", cursor: "pointer"}} 
+          onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}/>
+    </div>
+*/

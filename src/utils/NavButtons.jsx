@@ -1,4 +1,4 @@
-function NavButtons( { onBack, onNext, hideBack, hideNext, backButtonText = "Back" }) {
+function NavButtons( { onBack, onNext, hideBack, hideNext, backButtonText = "Back", nextButtonText = "Next" }) {
     return (
         <div 
         style= {{ 
@@ -15,8 +15,8 @@ function NavButtons( { onBack, onNext, hideBack, hideNext, backButtonText = "Bac
             {backButtonText}</button>}
 
           {!hideNext && <button className="next_button" 
-            onClick={onNext}
-            >Next</button>}
+            onClick={onNext}>
+            {nextButtonText}</button>}
 
         </div>
     );

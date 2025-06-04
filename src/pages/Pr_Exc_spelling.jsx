@@ -13,6 +13,35 @@ const SpellingPage = ({ renderWordWithSpan, setIsSpellingComplete }) => {
   const [feedback, setFeedback] = useState("");
   const [showNextButton, setShowNextButton] = useState(false); // Track whether to show the "Next" button
   const audioRef = useRef(null);
+  const checkButtonRef = useRef();
+  const nextButtonRef = useRef(null);
+
+    useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        if (showNextButton && nextButtonRef.current) {
+          nextButtonRef.current.click();
+        } else if (checkButtonRef.current) {
+          checkButtonRef.current.click();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showNextButton]);
+
+    useEffect(() => {
+      const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+          if (checkButtonRef.current) {
+            checkButtonRef.current.click();
+          }
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
+  
 
   useEffect(() => {
     if (audioRef.current) {
@@ -79,6 +108,7 @@ const SpellingPage = ({ renderWordWithSpan, setIsSpellingComplete }) => {
             style={{ width: "300px", marginTop: "20px" }}
           />
           <button
+            ref={checkButtonRef}
             onClick={checkAnswer}
             style={{ marginLeft: "10px", marginTop: "20px" }}
           >
@@ -101,7 +131,7 @@ const SpellingPage = ({ renderWordWithSpan, setIsSpellingComplete }) => {
             )}
             {/* Render "Next" button only if the answer is correct and it's not the last word */}
             {showNextButton && currentAudioIndex < audio_tags.length - 1 && (
-              <button onClick={handleNextAudio}>Next</button>
+              <button ref={nextButtonRef} onClick={handleNextAudio}>Next</button>
             )}
           </div>
         </>

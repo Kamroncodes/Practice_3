@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PassageArray from "../components/Passage_Array_3";
 import FindMatchingWords from "../utils/FindMatchingWords";
 
@@ -18,7 +18,7 @@ const Practice_Ex_clozenewstory = ({
   const [allCorrect, setAllCorrect] = useState(false);
   const [allQuestionsAnswered, setAllQuestionsAnswered] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
-
+  const checkButtonRef = useRef();
   const cleanText = (text) => text.replace(/[^a-zA-Z]/g, "").toLowerCase().trim();
 
   const matchingWords = FindMatchingWords(new_story_text, vocabulary_wordlist);
@@ -30,6 +30,18 @@ const Practice_Ex_clozenewstory = ({
     // Cleanup: Show the "Next" button when the component is unmounted
     return () => setShowNextButton(true);
   }, [setShowNextButton]);
+
+    useEffect(() => {
+      const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+          if (checkButtonRef.current) {
+            checkButtonRef.current.click();
+          }
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
 
   const checkAnswers = () => {
     const allAnswered = Object.keys(userSelections).length === vocabulary_wordlist.length;
@@ -115,8 +127,9 @@ const Practice_Ex_clozenewstory = ({
           </p>
         ))}
 
+      <div style={{ textAlign: "center" }}>
       {!allCorrect && (
-        <button onClick={checkAnswers} className="check_answers_button">
+        <button ref={checkButtonRef} onClick={checkAnswers} className="check_answers_button">
           {review_button || "Check Answers"}
         </button>
       )}
@@ -127,6 +140,7 @@ const Practice_Ex_clozenewstory = ({
         <p style={{ color: "orange" }}>Some answers are incorrect. Please try again!</p>
       )}
       {allCorrect && <p style={{ color: "green" }}>All answers are correct!</p>}
+    </div>
     </div>
   );
 };

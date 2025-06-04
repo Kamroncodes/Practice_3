@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import FindMatchingWords from "../utils/FindMatchingWords";
 import PassageArray from "../components/Passage_Array_3";
 
@@ -15,10 +15,22 @@ const Review_Ex_clozefromstory = ({
   const [allCorrect, setAllCorrect] = useState(false);
   const [allQuestionsAnswered, setAllQuestionsAnswered] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
-
+  const checkButtonRef = useRef();
   const cleanText = (text) => text.replace(/[^a-zA-Z]/g, "").toLowerCase().trim();
 
   const matchingWords = FindMatchingWords(storyText, vocabularyWordlist);
+
+    useEffect(() => {
+      const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+          if (checkButtonRef.current) {
+            checkButtonRef.current.click();
+          }
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
 
   useEffect(() => {
     // Hide the "Next" button when the component is mounted
@@ -137,7 +149,7 @@ return (
 
       {!allCorrect && (
         <div class="review_cloze_buttons_div">
-        <button onClick={checkAnswers} className="check_answers_button">
+        <button ref={checkButtonRef} onClick={checkAnswers} className="check_answers_button">
           {reviewButtonText || "Check Answers"}
         </button>
         </div>
