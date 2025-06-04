@@ -166,7 +166,10 @@ useEffect(() => {
         /* POPUP URLS */
 
 const dictionaryBaseURL = "https://dictionary.cambridge.org/dictionary/learner-english/";
-const translationBaseURL = "https://www.deepl.com/en/translator?hl=en#en/ja/"
+const translationBaseURL = "https://dict.longdo.com/search/"
+
+/* Thai to English translation website https://dict.longdo.com/search/ */
+/* English to Japanese translation website https://www.deepl.com/en/translator?hl=en#en/ja/ */
 
 
       /* RENDERING WORDS WITH POPUP */
