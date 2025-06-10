@@ -4,6 +4,168 @@ import FindMatchingWords from "../utils/FindMatchingWords";
 
 const Practice_Ex_clozenewstory = ({
   renderWordWithSpan,
+  setShowNextButton,
+}) => {
+  // Find the relevant passage with new_story_text
+  const newStoryPassage = PassageArray.find(
+    (passage) => passage.type === "practice" && passage.exercise === "cloze_new_story"
+  );
+
+  // Destructure the required properties
+  const { new_story_text, vocabulary_wordlist, review_button } = newStoryPassage || {};
+
+  const [userSelections, setUserSelections] = useState({});
+  const [allCorrect, setAllCorrect] = useState(false);
+  const [allQuestionsAnswered, setAllQuestionsAnswered] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const checkButtonRef = useRef();
+
+  const cleanText = (text) => text.replace(/[^a-zA-Z]/g, "").toLowerCase().trim();
+  const matchingWords = FindMatchingWords(new_story_text, vocabulary_wordlist);
+
+  useEffect(() => {
+    setShowNextButton(false);
+    return () => setShowNextButton(true);
+  }, [setShowNextButton]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        if (checkButtonRef.current) {
+          checkButtonRef.current.click();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Count the number of blanks (input fields) in the story
+const numBlanks = new_story_text
+  ? new_story_text.reduce((acc, story) => {
+      return (
+        acc +
+        story
+          .split(" ")
+          .filter(word => {
+            const match = word.match(/^([a-zA-Z]+)([.,!?]*)$/);
+            const cleanedWord = match ? cleanText(match[1]) : cleanText(word);
+            return matchingWords.includes(cleanedWord);
+          }).length
+      );
+    }, 0)
+  : 0;
+
+  const checkAnswers = () => {
+    const allAnswered = Object.keys(userSelections).length === numBlanks;
+    setAllQuestionsAnswered(allAnswered);
+
+    const results = Object.entries(userSelections).map(([key, userAnswer]) => {
+      const [sentenceIndex, wordIndex] = key.split("-").map(Number);
+      const originalWord = cleanText(
+        new_story_text[sentenceIndex].split(" ")[wordIndex]
+      );
+      return {
+        key,
+        correct: originalWord === cleanText(userAnswer),
+      };
+    });
+
+    results.forEach(({ key, correct }) => {
+      const selectElement = document.querySelector(`[data-key="${key}"]`);
+      if (selectElement) {
+        selectElement.style.backgroundColor = correct
+          ? "lightgreen"
+          : "lightcoral";
+      }
+    });
+
+    const allAnswersCorrect = results.every(({ correct }) => correct);
+    setAllCorrect(allAnswered && allAnswersCorrect);
+
+    if (allAnswered && allAnswersCorrect) {
+      setShowNextButton(true);
+    }
+
+    setShowFeedback(true);
+  };
+
+  return (
+    <div className="story_text_div" style={{ textAlign: "left" }}>
+      <h2>Practice Exercise: Cloze New Story</h2>
+      {new_story_text &&
+        new_story_text.map((story, index) => (
+          <p key={index}>
+            {story.split(" ").map((word, wordIndex) => {
+              const match = word.match(/^([a-zA-Z]+)([.,!?]*)$/);
+              const cleanedWord = match ? cleanText(match[1]) : cleanText(word);
+              const punctuation = match ? match[2] : "";
+
+              if (matchingWords.includes(cleanedWord)) {
+                return (
+                  <React.Fragment key={`${index}-${wordIndex}`}>
+                    <select
+                      data-key={`${index}-${wordIndex}`}
+                      className="fill-in-the-blank"
+                      defaultValue={""}
+                      onChange={(e) => {
+                        setUserSelections((prev) => ({
+                          ...prev,
+                          [`${index}-${wordIndex}`]: e.target.value,
+                        }));
+                      }}
+                    >
+                      <option value="">Select</option>
+                      {vocabulary_wordlist.map((option, optionIndex) => {
+                      const cleanOption = option.replace(/^\d+\.\s*/, "").trim();
+                      const displayOption = cleanOption.replace(/_/g, " ");
+                      return (
+                        <option key={optionIndex} value={cleanOption}>
+                        {displayOption}
+                        </option>
+                      );
+                      })}
+                    </select>
+                    {punctuation}{" "}
+                  </React.Fragment>
+                );
+              } else {
+                return (
+                  <React.Fragment key={`${index}-${wordIndex}`}>
+                    {renderWordWithSpan(word)}{" "}
+                  </React.Fragment>
+                );
+              }
+            })}
+          </p>
+        ))}
+
+      <div style={{ textAlign: "center", height: "100px" }}>
+      {!allCorrect && (
+        <button ref={checkButtonRef} onClick={checkAnswers} className="check_answers_button">
+          {review_button || "Check Answers"}
+        </button>
+      )}
+      {showFeedback && !allQuestionsAnswered && (
+        <p style={{ color: "yellow" }}>Not all questions have been answered!</p>
+      )}
+      {showFeedback && allQuestionsAnswered && !allCorrect && (
+        <p style={{ color: "red" }}>Some answers are incorrect. Please try again!</p>
+      )}
+      {allCorrect && <p style={{ color: "green" }}>All answers are correct!</p>}
+      </div>
+    </div>
+  );
+};
+
+export default Practice_Ex_clozenewstory;
+/*
+import React, { useState, useEffect, useRef } from "react";
+import PassageArray from "../components/Passage_Array_3";
+import FindMatchingWords from "../utils/FindMatchingWords";
+
+const Practice_Ex_clozenewstory = ({
+  renderWordWithSpan,
   setShowNextButton, // Receive the callback
 }) => {
   // Find the relevant passage with new_story_text
@@ -105,7 +267,7 @@ const Practice_Ex_clozenewstory = ({
                     >
                       <option value="">Select</option>
                       {vocabulary_wordlist.map((vocabWord, vocabIndex) => {
-                        const cleanVocabWord = vocabWord.replace(/^\d+\.\s*/, "").trim();
+                        const cleanVocabWord = vocabWord.replace(/^\d+\.\s/, "").trim();
                         return (
                           <option key={vocabIndex} value={cleanVocabWord}>
                             {cleanVocabWord}
@@ -127,7 +289,7 @@ const Practice_Ex_clozenewstory = ({
           </p>
         ))}
 
-      <div style={{ textAlign: "center" }}>
+      <div style={{ textAlign: "center" , height: "100px"}}>
       {!allCorrect && (
         <button ref={checkButtonRef} onClick={checkAnswers} className="check_answers_button">
           {review_button || "Check Answers"}
@@ -146,6 +308,8 @@ const Practice_Ex_clozenewstory = ({
 };
 
 export default Practice_Ex_clozenewstory;
+
+*/
 /*
 import React, { useState } from "react";
 import PassageArray from "../components/Passage_Array";
