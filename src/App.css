@@ -170,21 +170,22 @@ button:focus {
   margin-bottom: 8vh;
 }
 
-.definitions , .translations , .examples {
+.definitions , .translations , .examples, .synonyms {
   font-size: 1.25rem;
   margin: 1vh;
+  font-weight: normal;
 }
 
 .definitions p, .translations p, .examples p {
   margin: 0.5vh 0;
 }
 
-.definition_translation_box {
+.syn_tran_box {
   display: flex;
   justify-content: space-evenly;
 }
 
-.definitions , .translations {
+.definitions , .translations, .synonyms {
   width: 40vw;
   margin: 0 auto;
 }

@@ -280,9 +280,6 @@ const translationBaseURL = "https://dict.longdo.com/search/"
 
       </div>
 
-      <div className="definition_translation_box">
-
-        <div className="definition_box">
         {currentPassage.subtitle_1 && (
         <h4 className="subtitle">{renderWordWithSpan(currentPassage.subtitle_1)}</h4>
         )}
@@ -294,21 +291,28 @@ const translationBaseURL = "https://dict.longdo.com/search/"
             ))}
         </div>
          )}
-      </div>
 
-      <div className="translation_box">
-    
-      {currentPassage.subtitle_3 && (
-      <h4 className="subtitle">{renderWordWithSpan(currentPassage.subtitle_3)}</h4>
-      )}
+      <div className='syn_tran_box'> 
+        <div>
+        {currentPassage.subtitle_4 && (
+        <h4 className="subtitle">{renderWordWithSpan(currentPassage.subtitle_4)}</h4>
+        )}
 
-      {currentPassage.translations && (
-      <h4 className="translations">{renderWordWithSpan(currentPassage.translations)}</h4>
-      )}
+        {currentPassage.synonyms && (
+        <h4 className="synonyms">{renderWordWithSpan(currentPassage.synonyms)}</h4>
+        )}
+        </div>
+        <div>
+        {currentPassage.subtitle_3 && (
+        <h4 className="subtitle">{renderWordWithSpan(currentPassage.subtitle_3)}</h4>
+        )}
+
+        {currentPassage.translations && (
+        <h4 className="translations">{renderWordWithSpan(currentPassage.translations)}</h4>
+        )}
+        </div>
       </div>
       
-
-      </div>
 
       <div className="example_body">
 
