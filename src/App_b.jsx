@@ -13,7 +13,7 @@ import NavBar from './utils/NavBar.jsx';
 
       /* PASSAGES */
 
-import PassageArray from './components/Passage_Array_3b';
+import PassageArray from './components/Passage_Array_3b.jsx';
 
       /* EXERCISES - REVIEW AND PRACTICE */
 

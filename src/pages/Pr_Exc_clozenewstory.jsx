@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import PassageArray from "../components/Passage_Array_3";
 import FindMatchingWords from "../utils/FindMatchingWords";
+import VocabCheatSheet from "../utils/VocabCheatSheet";
+
 
 const Practice_Ex_clozenewstory = ({
   renderWordWithSpan,
   setShowNextButton,
+  vocabularyWordlist,
 }) => {
   // Find the relevant passage with new_story_text
   const newStoryPassage = PassageArray.find(
@@ -140,7 +143,7 @@ const numBlanks = new_story_text
           </p>
         ))}
 
-      <div style={{ textAlign: "center", height: "100px" }}>
+      <div style={{ textAlign: "center", height: "50px" }}>
       {!allCorrect && (
         <button ref={checkButtonRef} onClick={checkAnswers} className="check_answers_button">
           {review_button || "Check Answers"}
@@ -154,6 +157,11 @@ const numBlanks = new_story_text
       )}
       {allCorrect && <p style={{ color: "green" }}>All answers are correct!</p>}
       </div>
+
+    <div>
+      <VocabCheatSheet vocabulary={vocabularyWordlist} />
+    </div>
+
     </div>
   );
 };

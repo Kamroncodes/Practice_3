@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import FindMatchingWords from "../utils/FindMatchingWords";
+import VocabCheatSheet from "../utils/VocabCheatSheet";
 
 const ClozeExampleSentence = ({
   exampleSentences,
@@ -138,6 +139,11 @@ const ClozeExampleSentence = ({
         <p style={{ color: "red" }}>Some answers are incorrect. Please try again!</p>
       )}
       {allCorrect && <p style={{ color: "green" }}>All answers are correct!</p>}
+    
+    <div>
+      <VocabCheatSheet vocabulary={vocabularyWordlist} />
+    </div>
+    
     </div>
   );
 };
